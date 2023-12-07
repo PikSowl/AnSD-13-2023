@@ -61,7 +61,7 @@ int main(){
     setlocale(LC_ALL, "RUS");
     cout << "lab14" << endl;
     ifstream f;
-    f.open("example.txt");
+    f.open("input.txt");
 
     if (f.is_open()) {
         int len_of_words = 0;
