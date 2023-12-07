@@ -1,13 +1,178 @@
+
+#include <iostream>
+#include <unordered_map>
+#include <fstream>
+#include <string>
+#include <stack>
+
+class HashTable {
+
+private:
+    std::pair<std::string, std::string>* arr;
+    size_t cap;
+
+    int hash(const std::string& str) {
+        int sum = 0;
+        for (char i : str) {
+            sum += i;
+        }
+
+        int hash = sum % cap;
+        if (hash < 0) hash *= -1;
+
+
+        return hash;
+
+    }
+
+public:
+    HashTable(size_t size) {
+        arr = new std::pair<std::string, std::string>[size];
+        cap = size;
+        for (int i = 0; i < size; i++) {
+            arr[i].first = "\0";
+            arr[i].second = "\0";
+        }
+
+    }
+
+    size_t size() {
+        return cap;
+    }
+
+    struct Map_Val {
+        std::pair<std::string, std::string>* arr;
+        //ключ значение
+
+        std::string key;
+        int hash;
+        int sz;
+
+        Map_Val(int hashh, const std::string& k, std::pair<std::string, std::string>* l, int size) : hash(hashh), key(k), arr(l), sz(size) {
+        }
+
+        std::string value() {
+            if (arr[hash].first == key) {
+                return arr[hash].second;
+            }
+
+            for (int i = 0; i < sz; i++) {
+                if (arr[i].first == key) {
+                    return arr[i].second;
+                }
+            }
+
+            std::string a = "\0";
+            return a;
+
+        }
+
+
+        std::string& operator= (const std::string& val) {
+            //если ячейка пуста или элемент с таким ключом
+            if ((arr[hash].first == "\0") || (arr[hash].first == key)) {
+                arr[hash].first = key;
+                arr[hash].second = val;
+                return arr[hash].second;
+            }
+
+            //Если ячейка занята или найден элемент с таким ключом
+            for (int i = 0; i < sz; i++) {
+                if ((arr[i].first == "\0") || (arr[i].first == key)) {
+                    arr[i].first = key;
+                    arr[i].second = val;
+                    return arr[i].second;
+                }
+            }
+
+
+        }
+
+    };
+
+    Map_Val operator[](const std::string& key) {
+        return Map_Val(hash(key), key, arr, cap);
+    }
+
+
+    std::pair<std::string, std::string>* get_data() {
+        return arr;
+    }
+
+    ~HashTable() {
+        delete[] arr;
+    }
+
+
+};
+
+int main(){
+    std::cout << "lab13" << std::endl;
+    std::ifstream f;
+    f.open("example.txt");
+    if (f.is_open()) {
+        int len_of_words = 0;
+        std::string str;
+        std::vector<std::string> words;
+        while (!f.eof()) {
+            f >> str;
+            words.push_back(str);
+        }
+        HashTable h_table(words.size() * 2);
+        for (auto& word : words) {
+
+            switch (word.back())
+            {
+            case '.':
+                h_table["."] = ".";
+                word.pop_back();
+                break;
+            case ',':
+                h_table[","] = ",";
+                word.pop_back();
+                break;
+            case ';':
+                h_table[";"] = ";";
+                word.pop_back();
+                break;
+            case ':':
+                h_table[":"] = ":";
+                word.pop_back();
+                break;
+            case '?':
+                h_table["?"] = "?";
+                word.pop_back();
+                break;
+            case '!':
+                h_table["!"] = "!";
+                word.pop_back();
+                break;
+            }
+            h_table[word] = word;
+        }
+        std::cout << h_table["keep"].value() << std::endl;
+        std::ofstream out;
+        out.open("table.txt");
+        for (int i = 0; i < h_table.size(); i++) {
+            out << i << " : \"" << h_table.get_data()[i].second << "\"" << std::endl;
+        }
+        out.close();
+    }
+    f.close();
+    return 0;
+}
+
+
 /*
 #include <iostream>
 #include <fstream>
 #include <vector>
 
-using cout;
-using string;
-using endl;
-using vector;
-using pair;
+using std::cout;
+using std::string;
+using std::endl;
+using std::vector;
+using std::pair;
 
 class HashTableWithLists {
 public:
@@ -60,8 +225,8 @@ private:
 int main(){
     setlocale(LC_ALL, "RUS");
     cout << "lab14" << endl;
-    ifstream f;
-    f.open("input.txt");
+    std::ifstream f;
+    f.open("example.txt");
 
     if (f.is_open()) {
         int len_of_words = 0;
@@ -108,7 +273,7 @@ int main(){
         h_table["keep"] = "Hello World!";
 
 
-        ofstream out;
+        std::ofstream out;
         out.open("table.txt");
         for (int i = 0; i < h_table.size(); i++) {
             out << i << " : { ";
@@ -126,8 +291,8 @@ int main(){
     f.close();
 
 }
-
 */
+/*
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -540,3 +705,4 @@ int main()
     }
     return 0;
 }
+*/
